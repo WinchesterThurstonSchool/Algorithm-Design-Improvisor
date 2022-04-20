@@ -1,3 +1,4 @@
+import random
 # The timebase is an eigth note. This means that when the duration is 1, that means that the note lasts an eigth note.
 TIMEBASE = 1/8
 
@@ -13,7 +14,8 @@ scales = {
 	"super lochrian" : "HWHWWWW",
 	"mixolydian" : "WWHWWHW",
 	"lydian" : "WWWHWWH" ,
-	"half diminished" : "WHWHWWW"
+	"half diminished" : "WHWHWWW",
+	"blues scale" : "AWHHAW"
 }
 
 class Note:
@@ -64,7 +66,68 @@ class Chord:
 		self.extensions = extensions
 		self.duration = duration
 
-	def _get_scale(self):
+	def get_chord_tones(self):
+		# currently ignores extensions because otherwise it's just a scale
+		chord_tones = [Note(self.root)]
+		notes_list = ["A","A#/Bb","B","C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab"]
+		chord_intervals = ""
+
+		indx = notes_list.index(self.root)
+		indx = indx % len(notes_list)
+		
+		# Steps to find chord tones:
+
+		# determine maj,min,etc
+		# determine 7
+
+		if self.ctype == "maj" or self.ctype =="M":
+			# base triad
+			chord_intervals += "MM"
+			if self.seven == "m" or self.seven == "min":
+				chord_intervals += "m"
+			elif self.seven == "M" or self.seven == "maj":
+				chord_intervals += "M"
+
+		elif self.ctype == "min" or self.ctype =="m":
+			chord_intervals += "mM"
+			if self.seven == "m" or self.seven == "min":
+				chord_intervals += "m"
+			elif self.seven == "M" or self.seven == "maj":
+				chord_intervals += "M"
+	
+		elif self.ctype == "dim":
+			chord_intervals += "mm"
+			if self.seven == "m" or self.seven == "min":
+				chord_intervals += "m"
+			elif self.seven == "M" or self.seven == "maj":
+				chord_intervals += "M"
+
+		elif self.ctype == "aug":
+			chord_intervals += "MM"
+			if self.seven == "m" or self.seven == "min":
+				chord_intervals += "m"
+			elif self.seven == "M" or self.seven == "maj":
+				chord_intervals += "M"
+				
+		elif self.ctype == "half_dim":
+			chord_intervals += "mmM"
+
+
+		
+		for i in chord_intervals:
+			if i == "M":
+				indx += 4
+			elif i == "m":
+				indx += 3
+			print(indx)
+			indx = indx % len(notes_list)
+			chord_tones.append(Note(notes_list[indx]))
+
+		return chord_tones
+
+			
+	
+	def get_scales(self):
 		# minor just to test for now
 		scale_list = []
 		# determine the scales to use based on the chord
@@ -87,6 +150,7 @@ class Chord:
 			# here is the domonant seven case
 			if self.seven == "min":
 				if self.extensions == []:
+					scale_list.append(scales["blues scale"])
 					scale_list.append(scales["mixolydian"])
 				else:
 					if (9, "#") in self.extensions:
@@ -97,6 +161,7 @@ class Chord:
 						scale_list.append(scales["lydian"])
 					else:
 						scale_list.append(scales["mixolydian"])
+						
 			if self.seven == "maj":
 				scale_list.append(scales["major"])
 
@@ -117,11 +182,11 @@ class Chord:
 
 		return scale_list
 
-	def get_notes(self):
+	def get_scale_notes(self):
 		notes_list = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
 
 		# this is the first of the determined scales we wanna check. LATER: we can make this more dynamic
-		scale = self._get_scale()[0]
+		scale = self.get_scales()[random.randint(0,len(self.get_scales())-1)]
 		indx = notes_list.index(self.root)
 		notes = [Note(self.root)]
 		for i in scale:
@@ -143,6 +208,14 @@ class Chord:
 		# all but the last because it's the root
 		return notes[:-1]
 
+	def get_chromatic_tones(self):
+		chroma_tones = []
+		notes_list = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
+		for i in notes_list:
+			if i not in self.get_scale_notes():
+				chroma_tones.append(i)
+
+		return chroma_tones
 	def __repr__(self):
 		return str(self.root) + str(self.ctype) + str(self.seven) + str(self.extensions)
 
@@ -150,7 +223,7 @@ if __name__ == "__main__":
 	# testing combinations
 	chords = []
 	n = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
-	tp = ["maj","min","dim","aug","sus","half_dim"]
+	tp = ["maj","min","dim","aug","half_dim"]
 	ext = [9,11,13]
 	a = ["#", "b", ""]
 	s7 = ["maj","min"]
@@ -163,4 +236,9 @@ if __name__ == "__main__":
 						chords.append(Chord(note, typer, seven, [(extension, accidental)]))
 	print(len(chords))
 
-	# there are 1296 possible unique chords with the given parameters
+	# there are 1080 possible unique chords with the given parameters
+	print(chords[300])
+	print(chords[300].get_chord_tones())
+	print(chords[300].get_scales())
+	print(chords[300].get_scale_notes())
+	print(chords[300].get_chromatic_tones())
