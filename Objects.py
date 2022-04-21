@@ -40,7 +40,7 @@ class Note:
 		return f"Pitch #: {self.get_pitch()}, {self.name}, {self.octave}, {self.duration}"
 
 	def __repr__(self):
-		return self.name
+		return self.name +str(self.octave)
 
 class Chord:
 	def __init__(self, root: str, ctype : str, seven: str, extensions = [], duration = 1):
