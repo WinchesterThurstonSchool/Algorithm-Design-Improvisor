@@ -1,24 +1,11 @@
 import Objects
 from Objects import Chord, Note
 TIMEBASE = Objects.TIMEBASE
-
-### HERE GOES THE RHYTHM LOGIC ###
-
-class Rhythm:
-	def __init__(self, chord: Chord, past_notes = []):
-		self.chord = chord
-		self.past_notes = past_notes
-		self.weights = {"quarter": 1, "eighth": 1, "sixteenth": 1}
-	
-	# chromatic case
-	#previous rhythm
-	# weight dictionary
-	# definite rhythms
-
+from Rhythm import Rhythm
 
 ### HERE GOES THE PITCH LOGIC ###
 
-class Pitch:
+class GetPitch:
 	def __init__(self, rhythm : Rhythm):
 		self.chord = rhythm.chord
 		self.past_notes = rhythm.past_notes
@@ -42,11 +29,27 @@ class Pitch:
 			# up the octave every 12 and 24 notes
 			if i==12 or i==24:
 				octave += 1
+
+	def logic(self):
+		pitch_list = self.create_pitch_list()
+		pass
+		# create cases based on the previous notes. 
+		# Broad cases: Direction, Chromatic Resolution, interval
+
+		# case 1: chromatic resolution. If the previous note is not within the bounds of the scale, resolve up or down by a half step
+		past1 = self.past_notes[-1]
+		past2 = self.past_notes[-2]
+		if past1 not in self.chord.get_scale_notes():
+			pass
+
+		# weight the dictionary based on cases
+		# make list of notes based on the wegihts
+		# randomly choose notes from the list
+		
 		
 
 
 r = Rhythm(Chord("C", "maj", "M", extensions =[(9,'b')]), past_notes=[Note("C", octave=4)])
-p = Pitch(r)
+p = GetPitch(r)
 p.create_pitch_list()
 print(p.pitch_weights)
-		
