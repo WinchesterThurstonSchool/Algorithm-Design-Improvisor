@@ -11,6 +11,7 @@ class GetPitch:
 		self.past_notes = rhythm.past_notes
 		self.rhythm = rhythm
 		self.pitch_weights = {}
+		self.logic()
 
 
 	def create_pitch_list(self):
@@ -32,24 +33,30 @@ class GetPitch:
 
 	def logic(self):
 		pitch_list = self.create_pitch_list()
-		pass
 		# create cases based on the previous notes. 
 		# Broad cases: Direction, Chromatic Resolution, interval
 
-		# case 1: chromatic resolution. If the previous note is not within the bounds of the scale, resolve up or down by a half step
 		past1 = self.past_notes[-1]
 		past2 = self.past_notes[-2]
+
+		# case 1: chromatic resolution. If the previous note is not within the bounds of the scale, resolve up or down by a half step
+
 		if past1 not in self.chord.get_scale_notes():
-			pass
+			# Note: when adding to a note type, it adds to the pitch itself
+			# 60-40 up to down resolution
+			self.pitch_weights[past1+1] = 0.6
+			self.pitch_weights[past1-1] = 0.4
 
 		# weight the dictionary based on cases
 		# make list of notes based on the wegihts
 		# randomly choose notes from the list
+	
+	
 		
 		
 
 
-r = Rhythm(Chord("C", "maj", "M", extensions =[(9,'b')]), past_notes=[Note("C", octave=4)])
+r = Rhythm(Chord("C", "maj", "M", extensions =[(9,'b')]), past_notes=[Note("C", octave=4), Note("C#/Db", octave=4)])
 p = GetPitch(r)
 p.create_pitch_list()
 print(p.pitch_weights)

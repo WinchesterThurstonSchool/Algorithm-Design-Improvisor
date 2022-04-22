@@ -29,18 +29,28 @@ class Note:
 			duration (int, optional): The length of the note in timebase. Defaults to 1.
 		"""
 		self.name = name
-		self.pitch = pitch
-		self.duration = duration
 		self.octave = octave
+		self.pitch = self.get_pitch()
+		self.duration = duration
 	def get_pitch(self):
 		notes = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
 		return self.octave*8 + notes.index(self.name)
+
+	def __eq__(self, __o: object):
+		return self.pitch == __o.pitch
+
+	def __add__(self, __o: int):
+		self.pitch += __o
+		return self.pitch
+	
 
 	def __str__(self):
 		return f"Pitch #: {self.get_pitch()}, {self.name}, {self.octave}, {self.duration}"
 
 	def __repr__(self):
-		return self.name +str(self.octave)
+		return self.pitch
+
+	
 
 class Chord:
 	def __init__(self, root: str, ctype : str, seven: str, extensions = [], duration = 1):
@@ -219,7 +229,7 @@ class Chord:
 	def __repr__(self):
 		return str(self.root) + str(self.ctype) + str(self.seven) + str(self.extensions)
 
-if __name__ == "__main__":
+def get_chords_set():
 	# testing combinations
 	chords = []
 	n = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
@@ -234,11 +244,5 @@ if __name__ == "__main__":
 				for accidental in a:
 					for seven in s7:
 						chords.append(Chord(note, typer, seven, [(extension, accidental)]))
-	print(len(chords))
-
-	# there are 1080 possible unique chords with the given parameters
-	print(chords[300])
-	print(chords[300].get_chord_tones())
-	print(chords[300].get_scales())
-	print(chords[300].get_scale_notes())
-	print(chords[300].get_chromatic_tones())
+	
+	return chords
