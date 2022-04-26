@@ -1,0 +1,3 @@
+
+#this video seems really helpful https://www.google.com/search?q=how+to+write+a+midi+file+code&rlz=1C1CHBF_enUS896US896&sxsrf=APq-WBtWl5tqTe4xuplpM2h6gAvZx14JyA%3A1650984471759&ei=FwZoYqL6Lc6HytMPgoeC4AY&ved=0ahUKEwji4d-3_LH3AhXOg3IEHYKDAGwQ4dUDCA4&uact=5&oq=how+to+write+a+midi+file+code&gs_lcp=Cgdnd3Mtd2l6EAMyBQghEKABOgQIABBHOgYIABAWEB46BQgAEIYDOgUIIRCrAjoICCEQFhAdEB5KBAhBGABKBAhGGABQqwFY9Q9ghhFoAHACeACAAZgBiAG9BJIBAzEuNJgBAKABAcgBCMABAQ&sclient=gws-wiz#kpvalbx=_MAZoYufYOvelytMP6fCO0A836
+#midi seems pretty similar, just some differences in terminology, specifying an instrument, and duration as determined by buttton presses
