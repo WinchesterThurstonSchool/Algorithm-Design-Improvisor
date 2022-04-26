@@ -81,15 +81,13 @@ class Chord:
 		self.extensions = extensions
 		self.duration = duration
 
-	def get_chord_tones(self):
+	def get_chord_tones(self): 
 		# currently ignores extensions because otherwise it's just a scale
 		chord_tones = [Note(self.root)]
 		notes_list = ["A","A#/Bb","B","C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab"]
 		chord_intervals = ""
 
-		indx = notes_list.index(self.root)
-		indx = indx % len(notes_list)
-		
+		indx = notes_list.index(self.root)		
 		# Steps to find chord tones:
 
 		# determine maj,min,etc
@@ -127,8 +125,6 @@ class Chord:
 		elif self.ctype == "half_dim":
 			chord_intervals += "mmM"
 
-
-		
 		for i in chord_intervals:
 			if i == "M":
 				indx += 4
@@ -228,7 +224,7 @@ class Chord:
 		notes_list = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
 		for i in notes_list:
 			if i not in self.get_scale_notes():
-				chroma_tones.append(i)
+				chroma_tones.append(Note(i))
 
 		return chroma_tones
 	def __repr__(self):

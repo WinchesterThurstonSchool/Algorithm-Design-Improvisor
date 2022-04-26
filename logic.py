@@ -35,6 +35,34 @@ class GetPitch:
 			if i==12 or i==24:
 				octave += 1
 
+		return self.pitch_weights
+	
+	def chroma_weights(self):
+		chroma_scale = self.chord.get_chromatic_tones()
+		for i in chroma_scale:
+			self.pitch_weights[i.pitch] = 1
+			# adjust for lower octave as well
+			self.pitch_weights[i.pitch-12] = 1
+		return self.pitch_weights
+
+	def chord_tone_weights(self):
+		chord_tones = self.chord.get_chord_tones()
+		chroma_tones = self.chord.get_chromatic_tones()
+		intersection = [i for i in chroma_tones if i in chord_tones]
+		print(len(intersection))
+		print(chord_tones, chroma_tones)
+		# baseline chord tones
+		for i in chord_tones:
+			self.pitch_weights[i.pitch] = 1
+			self.pitch_weights[i.pitch-12] = 1
+		# weigh the colorful ones more
+		for j in intersection:
+			self.pitch_weights[j.pitch] = 4
+			self.pitch_weights[j.pitch-12] = 4
+		
+		return self.pitch_weights
+		
+
 
 
 	def logic(self):
@@ -79,9 +107,11 @@ class GetPitch:
 		
 		
 
-C = Chord("C", "major","min")
+C = Chord("C", "maj","min")
 n1 = Note("D", octave=4)
 n2 = Note("F", octave=4)
 r = Rhythm(C, [n1, n2])
 p = GetPitch(r)
+p.chroma_weights()
+p.chord_tone_weights()
 print(p.pitch_weights)
