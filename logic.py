@@ -10,7 +10,11 @@ class GetPitch:
 		self.chord = rhythm.chord
 		self.past_notes = rhythm.past_notes
 		self.rhythm = rhythm
-		self.pitch_weights = {}
+
+		self.interval_weights = {}
+
+		self.pitch_weights = dict()
+		self.create_pitch_list()
 		self.logic()
 
 
@@ -24,14 +28,21 @@ class GetPitch:
 		# 26 because we want a full 2 octaves inclusive
 		for i in range(1,26):
 			# add that note to the list
-			self.pitch_weights[Note(notes_list[indx], octave=octave)] = 1
+			self.pitch_weights[Note(notes_list[indx], octave=octave).pitch] = 0
 			# keep the index looping through and not overflowing
 			indx = (indx + 1) % len(notes_list)
 			# up the octave every 12 and 24 notes
 			if i==12 or i==24:
 				octave += 1
 
+
+
 	def logic(self):
+		"""takes the information given and creates weighted pitches
+
+		Returns:
+			dict: dictionary of pitches and their weights
+		"""
 		pitch_list = self.create_pitch_list()
 		# create cases based on the previous notes. 
 		# Broad cases: Direction, Chromatic Resolution, interval
@@ -39,14 +50,27 @@ class GetPitch:
 		past1 = self.past_notes[-1]
 		past2 = self.past_notes[-2]
 
+		# positive interval means upwards direction. negative means downwards
+		interval = past1.pitch - past2.pitch
+
 		# case 1: chromatic resolution. If the previous note is not within the bounds of the scale, resolve up or down by a half step
 
-		if past1 not in self.chord.get_scale_notes():
-			# Note: when adding to a note type, it adds to the pitch itself
-			# 60-40 up to down resolution
-			self.pitch_weights[past1+1] = 0.6
-			self.pitch_weights[past1-1] = 0.4
+		if past1.name in self.chord.get_chromatic_tones():
+			pass
 
+		# case 2: the direction of the previous notes is a scale going up by seconds
+		if interval >0 and interval < 3:
+			pass
+
+		elif interval < 0 and interval > -3:
+			# WLOG, go down the scale 
+			pass
+		
+		else:
+			# at all else, evenly distribute notes over chord tones
+			pass
+
+		return self.pitch_weights
 		# weight the dictionary based on cases
 		# make list of notes based on the wegihts
 		# randomly choose notes from the list
@@ -55,8 +79,9 @@ class GetPitch:
 		
 		
 
-
-r = Rhythm(Chord("C", "maj", "M", extensions =[(9,'b')]), past_notes=[Note("C", octave=4), Note("C#/Db", octave=4)])
+C = Chord("C", "major","min")
+n1 = Note("D", octave=4)
+n2 = Note("F", octave=4)
+r = Rhythm(C, [n1, n2])
 p = GetPitch(r)
-p.create_pitch_list()
 print(p.pitch_weights)

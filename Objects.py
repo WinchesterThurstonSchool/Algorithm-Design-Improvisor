@@ -36,19 +36,24 @@ class Note:
 		notes = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
 		return self.octave*8 + notes.index(self.name)
 
-	def __eq__(self, __o: object):
-		return self.pitch == __o.pitch
+	def __eq__(self, __o: str):
+		return self.name == __o
 
 	def __add__(self, __o: int):
 		self.pitch += __o
 		return self.pitch
+
+	def __sub__(self, __o:int):
+		self.pitch -= __o
+		return self.pitch
+
 	
 
 	def __str__(self):
 		return f"Pitch #: {self.get_pitch()}, {self.name}, {self.octave}, {self.duration}"
 
 	def __repr__(self):
-		return self.pitch
+		return str(self.pitch)
 
 	
 
@@ -58,7 +63,7 @@ class Chord:
 
 		Args:
 			root (str): The root note of the chord.
-			ctype (str): type of the chord (major, minor, aug, dim, half_dim)
+			ctype (str): type of the chord (maj, min, aug, dim, half_dim)
 			seventh (str): type of 7 chord (maj, min) NOTE: no need for dom7: it's the same as maj w min 7
 			extensions (list, optional): the tuple expression of the extensions. ex) (9,"#"), (11,""), (13,"b"). Defaults to [].
 			duration (int, optional): the duration of the chord in default TIMEBASE. Defaults to 1.
@@ -229,7 +234,7 @@ class Chord:
 	def __repr__(self):
 		return str(self.root) + str(self.ctype) + str(self.seven) + str(self.extensions)
 
-def get_chords_set():
+def chords_set():
 	# testing combinations
 	chords = []
 	n = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
