@@ -130,7 +130,6 @@ class Chord:
 				indx += 4
 			elif i == "m":
 				indx += 3
-			print(indx)
 			indx = indx % len(notes_list)
 			chord_tones.append(Note(notes_list[indx]))
 
@@ -224,7 +223,7 @@ class Chord:
 		notes_list = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
 		for i in notes_list:
 			if i not in self.get_scale_notes():
-				chroma_tones.append(Note(i))
+				chroma_tones.append(Note(i).pitch)
 
 		return chroma_tones
 	def __repr__(self):

@@ -14,30 +14,10 @@ class GetPitch:
 		self.interval_weights = {}
 
 		self.pitch_weights = dict()
-		self.create_pitch_list()
 		self.logic()
 
-
-	def create_pitch_list(self):
-		self.pitch_weights = {}
-		# determining what octave of the scale to center around. -1 because we go up two octaves later
-		octave = self.past_notes[-1].octave -1
-		notes_list = ["A", "A#/Bb", "B", "C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab"]
-		# the location of the root of the chord in the notes list
-		indx = notes_list.index(self.chord.root)
-		# 26 because we want a full 2 octaves inclusive
-		for i in range(1,26):
-			# add that note to the list
-			self.pitch_weights[Note(notes_list[indx], octave=octave).pitch] = 0
-			# keep the index looping through and not overflowing
-			indx = (indx + 1) % len(notes_list)
-			# up the octave every 12 and 24 notes
-			if i==12 or i==24:
-				octave += 1
-
-		return self.pitch_weights
 	
-	def chroma_weights(self):
+	def make_chroma_weights(self):
 		chroma_scale = self.chord.get_chromatic_tones()
 		for i in chroma_scale:
 			self.pitch_weights[i.pitch] = 1
@@ -45,7 +25,7 @@ class GetPitch:
 			self.pitch_weights[i.pitch-12] = 1
 		return self.pitch_weights
 
-	def chord_tone_weights(self):
+	def make_chord_tone_weights(self):
 		chord_tones = self.chord.get_chord_tones()
 		chroma_tones = self.chord.get_chromatic_tones()
 		intersection = [i for i in chroma_tones if i in chord_tones]
@@ -57,11 +37,14 @@ class GetPitch:
 			self.pitch_weights[i.pitch-12] = 1
 		# weigh the colorful ones more
 		for j in intersection:
-			self.pitch_weights[j.pitch] = 4
-			self.pitch_weights[j.pitch-12] = 4
+			self.pitch_weights[j.pitch] = 3
+			self.pitch_weights[j.pitch-12] = 3
 		
 		return self.pitch_weights
-		
+
+	def scale_tone_weights(self):
+		scale_notes = self.chord.get_scale_notes()
+			
 
 
 
@@ -71,7 +54,8 @@ class GetPitch:
 		Returns:
 			dict: dictionary of pitches and their weights
 		"""
-		pitch_list = self.create_pitch_list()
+		self.make_chord_tone_weights()
+		self.make_chroma_weights()
 		# create cases based on the previous notes. 
 		# Broad cases: Direction, Chromatic Resolution, interval
 
@@ -83,19 +67,21 @@ class GetPitch:
 
 		# case 1: chromatic resolution. If the previous note is not within the bounds of the scale, resolve up or down by a half step
 
-		if past1.name in self.chord.get_chromatic_tones():
-			pass
+		if past1.pitch in self.chord.get_chromatic_tones():
+			# really heavy weight on the chromatic steps
+			self.pitch_weights[past1.pitch+1] = 10
+			self.pitch_weights[past1.pitch-1] = 10
 
 		# case 2: the direction of the previous notes is a scale going up by seconds
 		if interval >0 and interval < 3:
-			pass
+			self.pitch_weights[past1.pitch+interval]=5
 
 		elif interval < 0 and interval > -3:
 			# WLOG, go down the scale 
-			pass
+			self.pitch_weights[past1.pitch-interval]=5
 		
 		else:
-			# at all else, evenly distribute notes over chord tones
+			# if these conditions arent met, look to the interval and weigh the colourful intervals
 			pass
 
 		return self.pitch_weights

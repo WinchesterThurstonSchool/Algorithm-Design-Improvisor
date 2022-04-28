@@ -1,4 +1,4 @@
-
+from Objects import Chord, Note
 #things I need
 #parse the 'kind' line to see if its a major or minor or whatever
 #in the 'pitch' object get the step(letter) and alter(number, convert to flats or sharps)
@@ -38,10 +38,10 @@ def writeChord(t):
         noteAlter = noteAlter + t[t.index('<alter>') + 8]
 
     durationNum = 11
-    duration = t[t.index('<duration>') + duartionNum]
-    while duartion[len(duration) -1] != '<':
+    duration = t[t.index('<duration>') + durationNum]
+    while durationNum[len(duration) -1] != '<':
         durationNum += 1
-        duration = duration + t[t.index('<duration>') + duartionNum]
+        duration = duration + t[t.index('<duration>') + durationNum]
 
     if noteAlter == '-1':
         noteAlter = 'b'
@@ -64,18 +64,18 @@ def writeChord(t):
         note = 'G#/Ab'
 
     if kind == 'maj7':
-        ctype = 'major'
-        seven = 'major'
+        ctype = 'maj'
+        seven = 'maj'
     elif kind == 'm7':
-        ctype = 'minor'
-        seven = 'minor'
+        ctype = 'min'
+        seven = 'min'
     elif kind == '7':
-        ctype = 'major'
-        seven = 'minor'
+        ctype = 'maj'
+        seven = 'min'
     degree = [degreeValue, degreeAlter]
     #gotta put the degree stuff in a tuple
 
-    fullChord = new Chord(note, ctype, seven, kind, degree, duration)
+    fullChord = Chord(note, ctype, seven, kind, degree, duration)
     return fullChord
 
 print(writeChord(bfaString))
