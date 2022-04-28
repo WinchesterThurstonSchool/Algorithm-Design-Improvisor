@@ -198,7 +198,7 @@ class Chord:
 		# this is the first of the determined scales we wanna check. LATER: we can make this more dynamic
 		scale = self.get_scales()[random.randint(0,len(self.get_scales())-1)]
 		indx = notes_list.index(self.root)
-		notes = [Note(self.root)]
+		notes = [Note(self.root).pitch]
 		for i in scale:
 			if i == "H":
 				# half step in the array
@@ -213,12 +213,17 @@ class Chord:
 				raise Exception("Invalid interval")
 			# don't overflow the array
 			indx = indx % len(notes_list)
-			notes.append(Note(notes_list[indx]))
+			notes.append(Note(notes_list[indx]).pitch)
 
 		# all but the last because it's the root
 		return notes[:-1]
 
 	def get_chromatic_tones(self):
+		"""creates a list of the chromatic notes in a chord
+
+		Returns:
+			list: a list of numerical pitches
+		"""
 		chroma_tones = []
 		notes_list = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
 		for i in notes_list:
