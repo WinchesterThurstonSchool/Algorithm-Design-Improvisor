@@ -34,7 +34,7 @@ class Note:
 		self.duration = duration
 	def get_pitch(self):
 		notes = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
-		return self.octave*8 + notes.index(self.name)
+		return self.octave*8 + notes.index(self.name) + 28
 
 	def __eq__(self, __o: str):
 		return self.name == __o
@@ -214,6 +214,7 @@ class Chord:
 			# don't overflow the array
 			indx = indx % len(notes_list)
 			notes.append(Note(notes_list[indx]).pitch)
+			notes.append(Note(notes_list[indx]).pitch-12)
 
 		# all but the last because it's the root
 		return notes[:-1]
@@ -227,8 +228,9 @@ class Chord:
 		chroma_tones = []
 		notes_list = ["C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab","A","A#/Bb","B"]
 		for i in notes_list:
-			if i not in self.get_scale_notes():
+			if Note(i).pitch not in self.get_scale_notes():
 				chroma_tones.append(Note(i).pitch)
+				chroma_tones.append(Note(i).pitch-12)
 
 		return chroma_tones
 	def __repr__(self):

@@ -4,7 +4,7 @@ from Objects import Chord, Note
 TIMEBASE = Objects.TIMEBASE
 from Rhythm import Rhythm
 from matplotlib import pyplot as plt
-from scipy import stats
+import random
 
 ### HERE GOES THE PITCH LOGIC ###
 
@@ -16,10 +16,10 @@ class GetPitch:
 
 		self.interval_weights = {}
 
-		self.chroma_weight = 3
+		self.chroma_weight = 2
 		self.ct_weight = 4
-		self.color_ct_weight = 5
-		self.scale_weight = 4
+		self.color_ct_weight =3
+		self.scale_weight = 2
 
 		self.pitch_weights = dict()
 		self.logic()
@@ -81,10 +81,11 @@ class GetPitch:
 
 		# case 1: chromatic resolution. If the previous note is not within the bounds of the scale, resolve up or down by a half step
 
+
 		if past1.pitch in self.chord.get_chromatic_tones():
 			# really heavy weight on the chromatic steps
-			self.pitch_weights[past1.pitch+1] = 10
-			self.pitch_weights[past1.pitch-1] = 10
+			self.pitch_weights = {past1.pitch+1:1, past1.pitch-1:1}
+			return self.pitch_weights
 
 		# case 2: the direction of the previous notes is a scale going up by seconds
 		if interval >0 and interval < 3:
@@ -95,7 +96,7 @@ class GetPitch:
 			self.pitch_weights[past1.pitch-interval]=5
 		
 		else:
-			# if these conditions arent met, look to the interval and weigh the colourful intervals
+			# if these conditions arent met, we can consider some stuff later
 			pass
 
 
@@ -106,6 +107,7 @@ class GetPitch:
 			elif i>past1.pitch+6:
 				self.pitch_weights[i] -= 2
 
+		
 		return self.pitch_weights
 		# weight the dictionary based on cases
 		# make list of notes based on the wegihts
@@ -115,17 +117,50 @@ class GetPitch:
 		x = list(self.pitch_weights.keys())
 		y = list(self.pitch_weights.values())
 		plt.bar(x,y)
+		plt.title(self.rhythm.past_notes[-1])
 		plt.show()
 	
+
+	def guess(self):
+		"""
+			takes a dictionary of pitches and their weights and returns a note object based on randomness
+		"""
+
+		# make a list of the pitches for the number of times they have a weight
+		pitches = []
+		for i in self.pitch_weights:
+			for j in range(self.pitch_weights[i]):
+				pitches.append(i)
+
+		# choose a random note from the list
+		r = random.randint(0, len(pitches)-1)
+		random_note_pitch = pitches[r]
+
+
+		# time to reverse engineer the pitch to a name
+		notes = ["C", "C#/Db", "D", "D#/Eb", "E", "F",
+                    "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"]
+		note_name = notes[random_note_pitch % 12]
+		final_note = Note(note_name, random_note_pitch)
+		return final_note
+
 	
+
 	
 		
 		
 
-C = Chord("C", "maj","min")
-n1 = Note("E", octave=4)
-n2 = Note("F#/Gb", octave=4)
+C = Chord("D", "maj","min")
+n1 = Note("C", octave=4)
+n2 = Note("D", octave=4)
 r = Rhythm(C, [n1, n2])
 p = GetPitch(r)
-p.logic()
-p.display()
+
+for i in range(30):
+	n2 = n1
+	n1 = p.guess()
+	r = Rhythm(C, [n1, n2])
+	p = GetPitch(r)
+	p.display()
+	print(n1)
+
