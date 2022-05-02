@@ -24,7 +24,7 @@ class Note:
 
 		Args:
 			name (str): [A,B,C,C# etc.]
-			pitch (int, optional): The number of the pitch (0,88] like on a piano. Defaults to 64.
+			pitch (int, optional): The number of the pitch as it is in MIDI. Defaults to 64.
 			octave (int, optional): The octave of the note ex.) A4, C6. Defaults to 4.
 			duration (int, optional): The length of the note in timebase. Defaults to 1.
 		"""
