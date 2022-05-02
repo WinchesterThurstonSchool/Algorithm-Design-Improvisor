@@ -8,12 +8,18 @@
 #there are different channels in a midi file associated with an instrument. we only need piano
 #^^ gotta figure out how to route it through a keyboard package or something (ask marco what program he said he was using)
 
+#fullChord = new Chord(note, ctype, seven, kind, degree, duration)
 #converting the chord to a midi event
-class Midi:
-    def __init__(self, duration: int, note: str, velocity: 50): #find a good neutral velocity
-        self.duration = duration
-        self.note = note
-        self.velocity = velocity
+import mido
+from mido import Message
 
-def convertToMidi(c):
-    #I fell asleep come back later
+# class Midi:
+#     def __init__(self, duration: int, note: str, velocity: 100): #find a good neutral velocity
+#         self.duration = duration
+#         self.note = note
+#         self.velocity = velocity
+
+#def __init__(self, name: str, pitch = 64, octave = 4, duration = 1)
+def convertToMidi(n):
+    Message('note_on', channel=0, note = n.get(note), velocity = 100, time = n.get(duration))
+    #gotta figure out what I'm sending this to to play the music
