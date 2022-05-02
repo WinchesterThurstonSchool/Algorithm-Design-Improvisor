@@ -18,6 +18,9 @@ class Rhythm:
 	# chromatic case
 
 	def logic(self):
+		if len(self.past_notes) < 2:
+			self.rhythm_weights = {1/8:1}
+			return self.rhythm_weights
 		past1 = self.past_notes[-1]
 		past2 = self.past_notes[-2]
 
@@ -54,7 +57,7 @@ class Rhythm:
 		self.logic()
 		total_list = []
 		for i in self.rhythm_weights:
-			for j in self.rhythm_weights[i]:
+			for j in range(self.rhythm_weights[i]):
 				total_list.append(i)
 
 		if len(total_list) > 0:
@@ -158,6 +161,10 @@ class GetPitch:
 			elif i > past1.pitch+6:
 				self.pitch_weights[i] -= 2
 
+		# if there's no usable notes, then just return a random note
+		if set(self.pitch_weights.values()) == set([0]):
+			self.pitch_weights[i-2] =2
+
 		return self.pitch_weights
 		# weight the dictionary based on cases
 		# make list of notes based on the wegihts
@@ -176,20 +183,19 @@ class GetPitch:
 		"""
 
 		# make a list of the pitches for the number of times they have a weight
-		self.logic()
+		self.pitch_weights = self.logic()
 		pitches = []
 		for i in self.pitch_weights:
 			for j in range(self.pitch_weights[i]):
 				pitches.append(i)
 
 		# choose a random note from the list
-		r = random.randint(0, len(pitches)-1)
-		random_note_pitch = pitches[r]
+		random_note_pitch = random.choice(pitches)
 
 		# time to reverse engineer the pitch to a name
 		notes = ["C", "C#/Db", "D", "D#/Eb", "E", "F",
                     "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"]
-		note_name = notes[random_note_pitch % 12]
+		note_name = notes[int(random_note_pitch) % 12]
 		final_note = Note(note_name, random_note_pitch)
 		return final_note
 
@@ -198,16 +204,32 @@ def choose_note(c: Chord, past_notes: list):
 	"""
 		takes a chord, two notes and returns a note based on the weights of the notes
 	"""
-	if len(past_notes)>2:
-		past_notes = past_notes[-2:]
+	notes = []
+	rhythm_sum = 0
 
-	r = Rhythm(c, past_notes)
-	p = GetPitch(r)
+	# add to notes for the total duration of the chord
+	while rhythm_sum < c.duration:
 
-	pitch = p.guess()
-	rhythm = r.guess()
+		if len(past_notes)>2:
+			past_notes = past_notes[-2:]
 
-	return Note(pitch.name, pitch.pitch, duration = rhythm)
+		r = Rhythm(c, past_notes)
+		p = GetPitch(r)
+
+		# our pitch and name storage
+		note_pitch_name = p.guess()
+		# rhythm storage
+		rhythm = r.guess()
+
+	# only want notes that are within the length of the chord
+		notes.append(Note(note_pitch_name.name, note_pitch_name.pitch, duration = rhythm))
+		rhythm_sum += rhythm
+
+		# add the new note to the past notes
+		past_notes += notes
+
+
+	return notes
 
 	
 
@@ -217,6 +239,6 @@ if __name__ == "__main__":
 	n1 = Note("D", octave=4)
 	n2 = Note("F#/Gb", octave=4)
 
-	note = choose_note(C, [n1, n2])
-	print(note)
+	notes = choose_note(C, [n1, n2])
+	print([i.name for i in notes])
 

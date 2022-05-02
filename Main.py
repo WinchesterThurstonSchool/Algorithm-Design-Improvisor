@@ -1,6 +1,3 @@
-from xml.etree.ElementTree import XML
-
-from click import Choice
 import musicXML_scraper
 import ChoiceLogic
 import musicXML_scraper
