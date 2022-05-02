@@ -7,76 +7,88 @@ from Objects import Chord, Note
 bfa = open("Blues For Alice.txt", "r")
 bfaString = "".join(i for i in bfa.readlines())
 
-def writeChord(t):
-    kind = ''
-    degreeValue = ''
-    degreeAlter = ''
-    noteLetter = ''
-    noteAlter = ''
-    note = ''
-    ctype = ''
-    seven = ''
-    degree = []
-    duration = 0
+def writeChord(string):
+    t = string
+    i = 0
+    end_chunk = t.index("</harmony>")
+    while i < end_chunk:
+        i += 1
+        if  "<!-" in t[i:i+3]:
+            t = t[i:]
+        
 
-    kindNum = 12
-    kind = t[t.index('<kind text="') + kindNum]
-    #gotta do the major major minor minor stuff so not 7
-    while kind[len(kind) -1] != '7':
-        kindNum += 1
-        kind = kind + t[t.index('<kind text="') + kindNum]
+        kind = ''
+        degreeValue = ''
+        degreeAlter = ''
+        noteLetter = ''
+        noteAlter = ''
+        note = ''
+        ctype = ''
+        seven = ''
+        degree = []
+        duration = 0
 
-    degreeValue = t[t.index('<degree-value>') + 14]
-    degreeAlter = t[t.index('<degree-alter>') + 14]
-    if degreeAlter == '-':
-        degreeAlter = degreeAlter + t[t.index('<degree-alter>') + 15]
-    degreeTypeIndex = t.index('<degree-alter>') + 1
+        kindNum = 12
+        kind = t[t.index('<kind text="') + kindNum]
+        #gotta do the major major minor minor stuff so not 7
+        while kind[len(kind) -1] != '7':
+            kindNum += 1
+            kind = kind + t[t.index('<kind text="') + kindNum]
 
-    noteLetter = t[t.index('<step>') + 6]
-    noteAlter = t[t.index('<alter>') + 7]
-    if noteAlter == '-':
-        noteAlter = noteAlter + t[t.index('<alter>') + 8]
+        degreeValue = t[t.index('<degree-value>') + 14]
+        degreeAlter = t[t.index('<degree-alter>') + 14]
+        if degreeAlter == '-':
+            degreeAlter = degreeAlter + t[t.index('<degree-alter>') + 15]
+        degreeTypeIndex = t.index('<degree-alter>') + 1
 
-    durationNum = 11
-    duration = t[t.index('<duration>') + durationNum]
-    while durationNum[len(duration) -1] != '<':
-        durationNum += 1
-        duration = duration + t[t.index('<duration>') + durationNum]
+        noteLetter = t[t.index('<root-step>') + 11]
+        noteAlter = t[t.index('<root-alter>') + 13]
+        if noteAlter == '-':
+            noteAlter = noteAlter + t[t.index('<root-alter>') + 14]
 
-    if noteAlter == '-1':
-        noteAlter = 'b'
-    elif noteAlter == '1':
-        noteAlter = '#'
+        durationNum = 11
+        duration = t[t.index('<duration>') + durationNum]
+        while duration[len(duration) -1] != '<':
+            durationNum += 1
+            duration = duration + t[t.index('<duration>') + durationNum]
 
-    if degreeAlter == '-1':
-        degreeAlter = 'b'
-    elif degreeAlter == '1':
-        degreeAlter = '#'
+        if noteAlter == '-1':
+            noteAlter = 'b'
+        elif noteAlter == '1':
+            noteAlter = '#'
 
-    note = noteLetter + noteAlter
-    if note == 'A#' or note == 'Bb':
-        note = 'A#/Bb'
-    elif note == 'C#' or note == 'Db':
-        note = 'C#/Db'
-    elif note == 'F#' or note == 'Gb':
-        note = 'F#/Gb'
-    elif note == 'G#' or note == 'Ab':
-        note = 'G#/Ab'
+        if degreeAlter == '-1':
+            degreeAlter = 'b'
+        elif degreeAlter == '1':
+            degreeAlter = '#'
 
-    if kind == 'maj7':
-        ctype = 'maj'
-        seven = 'maj'
-    elif kind == 'm7':
-        ctype = 'min'
-        seven = 'min'
-    elif kind == '7':
-        ctype = 'maj'
-        seven = 'min'
-    degree = [degreeValue, degreeAlter]
-    #gotta put the degree stuff in a tuple
+        note = noteLetter + noteAlter
+        if note == 'A#' or note == 'Bb':
+            note = 'A#/Bb'
+        elif note == 'C#' or note == 'Db':
+            note = 'C#/Db'
+        elif note == 'F#' or note == 'Gb':
+            note = 'F#/Gb'
+        elif note == 'G#' or note == 'Ab':
+            note = 'G#/Ab'
 
-    fullChord = Chord(note, ctype, seven, kind, degree, duration)
+        if kind == 'maj7':
+            ctype = 'maj'
+            seven = 'maj'
+        elif kind == 'm7':
+            ctype = 'min'
+            seven = 'min'
+        elif kind == '7':
+            ctype = 'maj'
+            seven = 'min'
+        degree = [degreeValue, degreeAlter]
+        #gotta put the degree stuff in a tuple
+
+        fullChord = Chord(note, ctype, seven, degree, duration)
+        if i == end_chunk:
+            print(fullChord)
+        
     return fullChord
 
-print(writeChord(bfaString))
+writeChord(bfaString)
 #print(bfaString)
