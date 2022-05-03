@@ -127,7 +127,7 @@ class GetPitch:
 
 		# incase there aren't any past notes, make a random selection
 		if len(self.past_notes) < 2:
-			return random.choice(list(self.pitch_weights.keys()))
+			return {random.choice(list(self.pitch_weights.keys())):1}
 
 		past1 = self.past_notes[-1]
 		past2 = self.past_notes[-2]

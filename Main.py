@@ -6,14 +6,15 @@ def XMLtoImprov(filename):
 	with open(filename, 'r') as f:
 		xml_string = "".join(i for i in f.readlines())
 
-	chords = musicXML_scraper.get_chords(xml_string)
+	chords = musicXML_scraper.getChords(xml_string)
 
 	notes = []
 	for chord in chords:
-		notes.append(ChoiceLogic.choose_note(chord, notes))
+		notes += ChoiceLogic.choose_note(chord, notes)
 	
 
 	return notes
 
 
-
+notes = XMLtoImprov('A Fine Romance.txt')
+print(notes)

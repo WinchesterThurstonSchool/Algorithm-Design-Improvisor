@@ -234,7 +234,8 @@ class Chord:
 
 		return chroma_tones
 	def __repr__(self):
-		return str(self.root) + str(self.ctype) + str(self.seven) + str(self.extensions)
+		return str(self.root) + str(self.ctype) + str(self.seven) + str(self.extensions) + str(self.duration)
+
 
 def chords_set():
 	# testing combinations
