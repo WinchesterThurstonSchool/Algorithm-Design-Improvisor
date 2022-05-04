@@ -1,20 +1,21 @@
 import musicXML_scraper
 import ChoiceLogic
-import musicXML_scraper
+import note_to_midi
 
-def XMLtoImprov(filename):
+def main(filename):
 	with open(filename, 'r') as f:
 		xml_string = "".join(i for i in f.readlines())
 
-	chords = musicXML_scraper.getChords(xml_string)
+	chords, bpm = musicXML_scraper.getChords(xml_string)
 
 	notes = []
 	for chord in chords:
 		notes += ChoiceLogic.choose_note(chord, notes)
 	
+	midi_file = note_to_midi.notes_to_midi(notes, bpm)
 
-	return notes
+	return True
+	
 
 
-notes = XMLtoImprov('Blues for Alice.txt')
-print(notes)
+main('Blues For Alice.txt')

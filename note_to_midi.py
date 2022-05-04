@@ -23,8 +23,7 @@ from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 
 
 
-def convertToMidi(n):
-    bpm = 120 #! change this to the correct bpm
+def convertToMidi(n, bpm):
     # declare this new midi file. all messages are on one track
     midi_file = MidiFile(type=0)
 

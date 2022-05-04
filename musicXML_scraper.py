@@ -116,7 +116,7 @@ def getChords(string, bpm = 160):
     for chunk in chunks[1:]:
         chords.append(writeChord(chunk, bpm))
     
-    return chords
+    return chords, bpm
 
 
 print(getChords(bfaString))
