@@ -118,6 +118,6 @@ def getChords(string, bpm = 160):
     
     return chords, bpm
 
-
-print(getChords(bfaString))
+if __name__ == "__main__":
+    print(getChords(bfaString))
 #print(bfaString)

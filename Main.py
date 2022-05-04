@@ -3,18 +3,33 @@ import ChoiceLogic
 import note_to_midi
 
 def main(filename):
-	with open(filename, 'r') as f:
-		xml_string = "".join(i for i in f.readlines())
+	try:
+		print("Opening File...")
+		with open(filename, 'r') as f:
+			xml_string = "".join(i for i in f.readlines())
+		print("File Opened")
 
-	chords, bpm = musicXML_scraper.getChords(xml_string)
+		print("Scraping MusicXML...")
+		chords, bpm = musicXML_scraper.getChords(xml_string)
+		print("MusicXML Scraped")
 
-	notes = []
-	for chord in chords:
-		notes += ChoiceLogic.choose_note(chord, notes)
-	
-	midi_file = note_to_midi.notes_to_midi(notes, bpm)
+		print("Generating Notes...")
+		notes = []
+		for chord in chords:
+			notes += ChoiceLogic.choose_note(chord, notes)
+		print("Notes Generated")
 
-	return True
+		print("Writing to MIDI...")
+		midi_file = note_to_midi.convertToMidi(notes, bpm)
+		print("MIDI Written")
+
+		print(f"Finished! MIDI file saved as \"{midi_file}\"")
+
+		return True
+	except Exception as e:
+		print("Something Went Wrong :(")
+		print(e)
+		return False
 	
 
 

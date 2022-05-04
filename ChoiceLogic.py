@@ -185,7 +185,6 @@ class GetPitch:
 
 		# make a list of the pitches for the number of times they have a weight
 		self.pitch_weights = self.logic()
-		self.display()
 		pitches = []
 		for i in self.pitch_weights:
 			for j in range(self.pitch_weights[i]):

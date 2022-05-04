@@ -24,6 +24,7 @@ from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 
 
 def convertToMidi(n, bpm):
+    song_name = "new_song.mid"
     # declare this new midi file. all messages are on one track
     midi_file = MidiFile(type=0)
 
@@ -38,8 +39,11 @@ def convertToMidi(n, bpm):
     ticks = midi_file.ticks_per_beat
     track.append(MetaMessage('channel_prefix', channel=0, time=0))
     track.append(MetaMessage('instrument_name', name=' ', time=0))
-    track.append(Message('note_on', channel = 0, note = n.pitch, velocity = 100, time = n.duartion*ticks))
-    track.append(Message('note_off', channel = 0, note = n.pitch, velocity = 100, time = n.duartion*ticks))
+    for note in n:
+        track.append(Message('note_on', channel = 0, note = note.pitch, velocity = 100, time = int(note.duration*ticks)))
+        track.append(Message('note_off', channel = 0, note = note.pitch, velocity = 100, time = int(note.duration*ticks)))
 
-    midi_file.save('new_song.mid')
+    midi_file.save(song_name)
+
+    return song_name
     #gotta figure out what I'm sending this to to play the music
