@@ -164,6 +164,7 @@ class GetPitch:
 		# if there's no usable notes, then just return a random note
 		if set(self.pitch_weights.values()) == set([0]):
 			self.pitch_weights[i-2] =2
+			self.pitch_weights[i+2] = 2
 
 		return self.pitch_weights
 		# weight the dictionary based on cases
@@ -184,6 +185,7 @@ class GetPitch:
 
 		# make a list of the pitches for the number of times they have a weight
 		self.pitch_weights = self.logic()
+		self.display()
 		pitches = []
 		for i in self.pitch_weights:
 			for j in range(self.pitch_weights[i]):

@@ -11,7 +11,7 @@
 #fullChord = new Chord(note, ctype, seven, kind, degree, duration)
 #converting the chord to a midi event
 import mido
-from mido import Message
+from mido import Message, MetaMessage, MidiFile, MidiTrack
 
 # class Midi:
 #     def __init__(self, duration: int, note: str, velocity: 100): #find a good neutral velocity
@@ -21,5 +21,17 @@ from mido import Message
 
 #def __init__(self, name: str, pitch = 64, octave = 4, duration = 1)
 def convertToMidi(n):
+    # declare this new midi file. all messages are on one track
+    midi_file = MidiFile(type=0)
+    # create a track in the midi file
+    track = MidiTrack()
+    # put a track in the midi file
+    midi_file.tracks.append(track)
+    # put in the metamessages for the piece
+    track.append(MetaMessage('time_signature', numerator=4, denominator=4,
+                             clocks_per_click=24, notated_32nd_notes_per_beat=8, time=0))
+    track.append(MetaMessage('set_tempo', tempo=6000*self.bpm, time=0))
+    track.append(MetaMessage('channel_prefix', channel=0, time=0))
+    track.append(MetaMessage('instrument_name', name=' ', time=0))
     Message('note_on', channel=0, note = n.get(note), velocity = 100, time = n.get(duration))
     #gotta figure out what I'm sending this to to play the music
