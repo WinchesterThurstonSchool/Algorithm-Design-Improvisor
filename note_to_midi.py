@@ -34,5 +34,5 @@ def convertToMidi(n):
     track.append(MetaMessage('set_tempo', tempo=6000*bpm, time=0))
     track.append(MetaMessage('channel_prefix', channel=0, time=0))
     track.append(MetaMessage('instrument_name', name=' ', time=0))
-    Message('note_on', channel=0, note = n.get(note), velocity = 100, time = n.get(duration))
+    Message('note_on', channel=0, note = n.pitch, velocity = 100, time = n.duartion)
     #gotta figure out what I'm sending this to to play the music
