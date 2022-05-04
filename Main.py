@@ -16,5 +16,5 @@ def XMLtoImprov(filename):
 	return notes
 
 
-notes = XMLtoImprov('A Fine Romance.txt')
+notes = XMLtoImprov('Blues for Alice.txt')
 print(notes)

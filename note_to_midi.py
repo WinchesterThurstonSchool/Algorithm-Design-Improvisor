@@ -11,7 +11,7 @@
 #fullChord = new Chord(note, ctype, seven, kind, degree, duration)
 #converting the chord to a midi event
 import mido
-from mido import Message
+from mido import Message, MetaMessage, MidiFile, MidiTrack
 
 # class Midi:
 #     def __init__(self, duration: int, note: str, velocity: 100): #find a good neutral velocity
