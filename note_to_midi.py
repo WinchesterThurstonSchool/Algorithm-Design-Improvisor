@@ -21,5 +21,5 @@ from mido import Message
 
 #def __init__(self, name: str, pitch = 64, octave = 4, duration = 1)
 def convertToMidi(n):
-    Message('note_on', channel=0, note = n.get(note), velocity = 100, time = n.get(duration))
+    Message('note_on', channel=0, note = n.pitch, velocity = 100, time = n.duartion)
     #gotta figure out what I'm sending this to to play the music
