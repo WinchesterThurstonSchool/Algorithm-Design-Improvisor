@@ -74,10 +74,10 @@ class GetPitch:
 
 		self.interval_weights = {}
 
-		self.chroma_weight = 2
+		self.chroma_weight = 3
 		self.ct_weight = 4
-		self.color_ct_weight = 3
-		self.scale_weight = 2
+		self.color_ct_weight = 5
+		self.scale_weight = 5
 
 		self.pitch_weights = dict()
 
@@ -157,9 +157,9 @@ class GetPitch:
 		# distribute notes so that they're weighted well within a good range, not all 2 octaves
 		for i in self.pitch_weights:
 			if i < past1.pitch-6:
-				self.pitch_weights[i] -= 2
+				self.pitch_weights[i] -= 3
 			elif i > past1.pitch+6:
-				self.pitch_weights[i] -= 2
+				self.pitch_weights[i] -= 3
 
 		# if there's no usable notes, then just return a random note
 		if set(self.pitch_weights.values()) == set([0]):

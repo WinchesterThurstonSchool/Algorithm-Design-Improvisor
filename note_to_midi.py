@@ -20,6 +20,11 @@ from mido import Message, MetaMessage, MidiFile, MidiTrack
 #         self.velocity = velocity
 
 #def __init__(self, name: str, pitch = 64, octave = 4, duration = 1)
+
+def note_duration_to_ticks(note, bpm):
+    duration = note.duration
+
+
 def convertToMidi(n):
     bpm = 120 #! change this to the correct bpm
     # declare this new midi file. all messages are on one track
