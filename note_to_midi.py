@@ -13,13 +13,6 @@
 import mido
 from mido import Message, MetaMessage, MidiFile, MidiTrack
 
-# class Midi:
-#     def __init__(self, duration: int, note: str, velocity: 100): #find a good neutral velocity
-#         self.duration = duration
-#         self.note = note
-#         self.velocity = velocity
-
-#def __init__(self, name: str, pitch = 64, octave = 4, duration = 1)
 def convertToMidi(n):
     bpm = 120 #! change this to the correct bpm
     # declare this new midi file. all messages are on one track
@@ -34,5 +27,6 @@ def convertToMidi(n):
     track.append(MetaMessage('set_tempo', tempo=6000*bpm, time=0))
     track.append(MetaMessage('channel_prefix', channel=0, time=0))
     track.append(MetaMessage('instrument_name', name=' ', time=0))
-    Message('note_on', channel=0, note = n.pitch, velocity = 100, time = n.duartion)
+    track.append(Message('note_on', channel=0, note = n.pitch, velocity = 100, time = n.duartion))
+    track.append(Message('note_off'))
     #gotta figure out what I'm sending this to to play the music
