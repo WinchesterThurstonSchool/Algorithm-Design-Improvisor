@@ -38,6 +38,8 @@ def convertToMidi(n, bpm):
     ticks = midi_file.ticks_per_beat
     track.append(MetaMessage('channel_prefix', channel=0, time=0))
     track.append(MetaMessage('instrument_name', name=' ', time=0))
-    track.append(Message('note_on', channel=0, note = n.pitch, velocity = 100, time = n.duartion*ticks))
-    track.append(Message('note_off'))
+    track.append(Message('note_on', channel = 0, note = n.pitch, velocity = 100, time = n.duartion*ticks))
+    track.append(Message('note_off', channel = 0, note = n.pitch, velocity = 100, time = n.duartion*ticks))
+
+    midi_file.save('new_song.mid')
     #gotta figure out what I'm sending this to to play the music
