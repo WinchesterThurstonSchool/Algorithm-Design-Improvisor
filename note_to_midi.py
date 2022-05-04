@@ -11,9 +11,8 @@
 #fullChord = new Chord(note, ctype, seven, kind, degree, duration)
 #converting the chord to a midi event
 import mido
-from mido import Message, MetaMessage, MidiFile, MidiTrack
+from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 
-<<<<<<< HEAD
 # class Midi:
 #     def __init__(self, duration: int, note: str, velocity: 100): #find a good neutral velocity
 #         self.duration = duration
@@ -22,16 +21,13 @@ from mido import Message, MetaMessage, MidiFile, MidiTrack
 
 #def __init__(self, name: str, pitch = 64, octave = 4, duration = 1)
 
-def note_duration_to_ticks(note, bpm):
-    duration = note.duration
 
 
-=======
->>>>>>> 28e39b738e1ba03983c2c2c4619c7edf24721c42
 def convertToMidi(n):
     bpm = 120 #! change this to the correct bpm
     # declare this new midi file. all messages are on one track
     midi_file = MidiFile(type=0)
+
     # create a track in the midi file
     track = MidiTrack()
     # put a track in the midi file
@@ -39,9 +35,10 @@ def convertToMidi(n):
     # put in the metamessages for the piece
     track.append(MetaMessage('time_signature', numerator=4, denominator=4,
                              clocks_per_click=24, notated_32nd_notes_per_beat=8, time=0))
-    track.append(MetaMessage('set_tempo', tempo=6000*bpm, time=0))
+    track.append(MetaMessage('set_tempo', tempo=bpm2tempo(bpm), time=0))
+    ticks = midi_file.ticks_per_beat
     track.append(MetaMessage('channel_prefix', channel=0, time=0))
     track.append(MetaMessage('instrument_name', name=' ', time=0))
-    track.append(Message('note_on', channel=0, note = n.pitch, velocity = 100, time = n.duartion))
+    track.append(Message('note_on', channel=0, note = n.pitch, velocity = 100, time = n.duartion*ticks))
     track.append(Message('note_off'))
     #gotta figure out what I'm sending this to to play the music
