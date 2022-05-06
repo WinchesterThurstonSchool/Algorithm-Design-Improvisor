@@ -21,10 +21,9 @@ from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 
 #def __init__(self, name: str, pitch = 64, octave = 4, duration = 1)
 
-
+song_name = "new_song.mid"
 
 def convertToMidi(n, bpm):
-    song_name = "new_song.mid"
     # declare this new midi file. all messages are on one track
     midi_file = MidiFile(type=0)
 
@@ -33,24 +32,23 @@ def convertToMidi(n, bpm):
     # put a track in the midi file
     midi_file.tracks.append(track)
     # put in the metamessages for the piece
-    track.append(MetaMessage('time_signature', numerator=4, denominator=4,
-                             clocks_per_click=24, notated_32nd_notes_per_beat=8, time=0))
+    track.append(MetaMessage('time_signature', numerator=4, denominator=4))
     track.append(MetaMessage('set_tempo', tempo=bpm2tempo(bpm), time=0))
-    ticks = 240
-    if n.duartion == 0.0625:
-        n.duartion = 1
-    elif n.duration == 0.125:
-        n.duartion = 2
-    elif n.duartion == 0.25:
-        n.duartion = 3
-    elif n.duartion == 0.5:
-        n.duartion = 4
     track.append(MetaMessage('channel_prefix', channel=0, time=0))
-    track.append(MetaMessage('instrument_name', name=' ', time=0))
-    ticks = midi_file.ticks_per_beat
+    track.append(MetaMessage('instrument_name', name='Piano', time=0))
+
     for note in n:
-        track.append(Message('note_on', channel = 0, note = note.pitch, velocity = 100, time = int(960*note.duration)))
-        track.append(Message('note_off', channel = 0, note = note.pitch, velocity = 100, time = int(960*note.duration)))
+        ticks = 60
+        if note.duration == 0.0625:
+            note.duration = 1
+        elif note.duration == 0.125:
+            note.duration = 2
+        elif note.duration == 0.25:
+            note.duration = 4
+        elif note.duration == 0.5:
+            note.duration = 8
+        track.append(Message('note_on', channel = 0, note = note.pitch, velocity = 100, time = 0))
+        track.append(Message('note_off', channel = 0, note = note.pitch, velocity = 100, time = int(ticks*note.duration)))
 
     midi_file.save(song_name)
 

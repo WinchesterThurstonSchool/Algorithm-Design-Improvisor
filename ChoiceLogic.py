@@ -12,7 +12,7 @@ class Rhythm:
 		self.chord = chord
 		self.past_notes = past_notes
 
-		self.rhythm_weights = {}
+		self.rhythm_weights = dict()
 		
 
 	# chromatic case
@@ -21,32 +21,39 @@ class Rhythm:
 		if len(self.past_notes) < 2:
 			self.rhythm_weights = {1/8:1}
 			return self.rhythm_weights
+		
 		past1 = self.past_notes[-1]
 		past2 = self.past_notes[-2]
 
-		if past1.duration == 16:
-			if past2.duration == 8:
+		if past1.duration == 1/16:
+			if past2.duration == 1/8:
 				# the only option is a sixteenth note. Don't want 1/16 offsets
-				self.rhythm_weights = {16: 1}
-		elif past1.duration == 4:
+				self.rhythm_weights = {1/16: 1}
+		elif past1.duration == 1/4:
 			# heavy weight against long notes after a long note
 			self.rhythm_weights = {
-				2: 1,
-				4: 1,
-				8: 8,
-				16: 2
+				1/2: 1,
+				1/4: 1,
+				1/8: 8,
+				1/16: 2
 			}
-		elif past1.duration == 2:
+		elif past1.duration == 1/2:
 			# equal weight for everything afer a half note except for another half note
 			self.rhythm_weights = {
-				4: 1,
-				8: 1,
-				16: 1
+				1/4: 1,
+				1/8: 1,
+				1/16: 1
 			}
-
+		elif past1.duration == 1/8:
+			self.rhythm_weights = {
+				1/2: 1,
+				1/4: 2,
+				1/8 :4,
+				1/16: 1
+			}
 		return self.rhythm_weights
 
-	def dispaly(self):
+	def display(self):
 		# visualize rhythm_wights
 		x = list(self.rhythm_weights.keys())
 		y = list(self.rhythm_weights.values())
@@ -54,14 +61,14 @@ class Rhythm:
 		plt.show()
 
 	def guess(self):
-		self.logic()
+		self.rhythm_weights = self.logic()
 		total_list = []
 		for i in self.rhythm_weights:
 			for j in range(self.rhythm_weights[i]):
 				total_list.append(i)
 
 		if len(total_list) > 0:
-			return 1/random.choice(total_list)
+			return random.choice(total_list)
 		else:
 			return 1/8
 	
@@ -134,6 +141,7 @@ class GetPitch:
 
 		# positive interval means upwards direction. negative means downwards
 		interval = past1.pitch - past2.pitch
+		self.pitch_weights[past1.pitch] = 5
 
 		# case 1: chromatic resolution. If the previous note is not within the bounds of the scale, resolve up or down by a half step
 
@@ -156,8 +164,7 @@ class GetPitch:
 			self.pitch_weights[past1.pitch-interval] = 2
 
 		# distribute notes so that they're weighted well within a good range, not all 2 octaves
-		slope = self.pitch_weights[past1.pitch] / (past1.pitch- min(self.pitch_weights))
-		print(past1.pitch)
+		slope = self.pitch_weights[past1.pitch] / (past1.pitch- min(self.pitch_weights)) / 2
 		for i in self.pitch_weights:
 			self.pitch_weights[i] = abs(int(-slope * abs(i - past1.pitch) + self.pitch_weights[i]))
 		
@@ -166,6 +173,8 @@ class GetPitch:
 		if set(self.pitch_weights.values()) == set([0]):
 			self.pitch_weights[i-2] =2
 			self.pitch_weights[i+2] = 2
+
+		self.pitch_weights[past1.pitch] = 0
 
 		return self.pitch_weights
 		# weight the dictionary based on cases
@@ -216,6 +225,7 @@ def choose_note(c: Chord, past_notes: list):
 			past_notes = past_notes[-2:]
 
 		r = Rhythm(c, past_notes)
+
 		p = GetPitch(r)
 
 		# our pitch and name storage
