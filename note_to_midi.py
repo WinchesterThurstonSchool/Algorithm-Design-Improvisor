@@ -36,6 +36,15 @@ def convertToMidi(n, bpm):
     track.append(MetaMessage('time_signature', numerator=4, denominator=4,
                              clocks_per_click=24, notated_32nd_notes_per_beat=8, time=0))
     track.append(MetaMessage('set_tempo', tempo=bpm2tempo(bpm), time=0))
+    ticks = 240
+    if n.duartion == 0.0625:
+        n.duartion = 1
+    elif n.duration == 0.125:
+        n.duartion = 2
+    elif n.duartion == 0.25:
+        n.duartion = 3
+    elif n.duartion == 0.5:
+        n.duartion = 4
     track.append(MetaMessage('channel_prefix', channel=0, time=0))
     track.append(MetaMessage('instrument_name', name=' ', time=0))
     ticks = midi_file.ticks_per_beat
