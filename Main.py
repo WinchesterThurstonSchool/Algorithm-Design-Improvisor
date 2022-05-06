@@ -3,34 +3,31 @@ import ChoiceLogic
 import note_to_midi
 
 def main(filename):
-	try:
-		print("Opening File...")
-		with open(filename, 'r') as f:
-			xml_string = "".join(i for i in f.readlines())
-		print("File Opened")
 
-		print("Scraping MusicXML...")
-		chords, bpm = musicXML_scraper.getChords(xml_string)
-		print("MusicXML Scraped")
+	print("Opening File...")
+	with open(filename, 'r') as f:
+		xml_string = "".join(i for i in f.readlines())
+	print("File Opened")
 
-		print("Generating Notes...")
-		notes = []
-		for chord in chords:
-			notes += ChoiceLogic.choose_note(chord, notes)
-		print("Notes Generated")
+	print("Scraping MusicXML...")
+	chords, bpm = musicXML_scraper.getChords(xml_string)
+	print("MusicXML Scraped")
 
-		print("Writing to MIDI...")
-		midi_file = note_to_midi.convertToMidi(notes, bpm)
-		print("MIDI Written")
+	print("Generating Notes...")
+	notes = []
+	for chord in chords:
+		notes += ChoiceLogic.choose_note(chord, notes)
+	print("Notes Generated")
 
-		print(f"Finished! MIDI file saved as \"{midi_file}\"")
+	print("Writing to MIDI...")
+	midi_file = note_to_midi.convertToMidi(notes, bpm)
+	print("MIDI Written")
 
-		return True
-	except Exception as e:
-		print("Something Went Wrong :(")
-		print(e)
-		return False
-	
+	print(f"Finished! MIDI file saved as \"{midi_file}\"")
+
+	return True
+
+
 
 
 main('Blues For Alice.txt')

@@ -148,18 +148,19 @@ class GetPitch:
 
 		elif interval < 0 and interval > -3:
 			# WLOG, go down the scale
-			self.pitch_weights[past1.pitch-interval] = 5
+			self.pitch_weights[past1.pitch-interval] =  5
 
 		else:
-			# if these conditions arent met, we can consider some stuff later
-			pass
+			# if these conditions arent met, let's make the intervalic weights more important but not o mcuch so
+			self.pitch_weights[past1.pitch+interval] = 2
+			self.pitch_weights[past1.pitch-interval] = 2
 
 		# distribute notes so that they're weighted well within a good range, not all 2 octaves
+		slope = self.pitch_weights[past1.pitch] / (past1.pitch- min(self.pitch_weights))
+		print(past1.pitch)
 		for i in self.pitch_weights:
-			if i < past1.pitch-6:
-				self.pitch_weights[i] -= 3
-			elif i > past1.pitch+6:
-				self.pitch_weights[i] -= 3
+			self.pitch_weights[i] = abs(int(-slope * abs(i - past1.pitch) + self.pitch_weights[i]))
+		
 
 		# if there's no usable notes, then just return a random note
 		if set(self.pitch_weights.values()) == set([0]):
