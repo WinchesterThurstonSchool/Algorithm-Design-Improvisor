@@ -1,4 +1,3 @@
-from matplotlib.colors import from_levels_and_colors
 import Objects
 from Objects import Chord, Note
 TIMEBASE = Objects.TIMEBASE
@@ -81,10 +80,10 @@ class GetPitch:
 
 		self.interval_weights = {}
 
-		self.chroma_weight = 3
-		self.ct_weight = 4
-		self.color_ct_weight = 5
-		self.scale_weight = 5
+		self.chroma_weight = 1
+		self.ct_weight = 5
+		self.color_ct_weight = 1
+		self.scale_weight = 1
 
 		self.pitch_weights = dict()
 
@@ -120,66 +119,130 @@ class GetPitch:
 
 		return self.pitch_weights
 
-	def logic(self):
-		"""takes the information given and creates weighted pitches
+	# def logic(self):
+	# 	"""takes the information given and creates weighted pitches
 
-		Returns:
-			dict: dictionary of pitches and their weights
-		"""
-		self.make_chord_tone_weights()
-		self.make_chroma_weights()
-		self.scale_tone_weights()
-		# create cases based on the previous notes.
-		# Broad cases: Direction, Chromatic Resolution, interval
+	# 	Returns:
+	# 		dict: dictionary of pitches and their weights
+	# 	"""
+	# 	self.make_chord_tone_weights()
+	# 	self.make_chroma_weights()
+	# 	self.scale_tone_weights()
+	# 	# create cases based on the previous notes.
+	# 	# Broad cases: Direction, Chromatic Resolution, interval
 
-		# incase there aren't any past notes, make a random selection
-		if len(self.past_notes) < 2:
-			return {random.choice(list(self.pitch_weights.keys())):1}
+	# 	# incase there aren't any past notes, make a random selection
+	# 	if len(self.past_notes) < 2:
+	# 		return {random.choice(list(self.pitch_weights.keys())):1}
 
-		past1 = self.past_notes[-1]
-		past2 = self.past_notes[-2]
+	# 	past1 = self.past_notes[-1]
+	# 	past2 = self.past_notes[-2]
 
-		# positive interval means upwards direction. negative means downwards
-		interval = past1.pitch - past2.pitch
-		self.pitch_weights[past1.pitch] = 5
+	# 	# positive interval means upwards direction. negative means downwards
+	# 	interval = past1.pitch - past2.pitch
+	# 	self.pitch_weights[past1.pitch] = 5
 
-		# case 1: chromatic resolution. If the previous note is not within the bounds of the scale, resolve up or down by a half step
+	# 	# case 1: chromatic resolution. If the previous note is not within the bounds of the scale, resolve up or down by a half step
 
-		if past1.pitch in self.chord.get_chromatic_tones():
-			# really heavy weight on the chromatic steps
-			self.pitch_weights = {past1.pitch+1: 1, past1.pitch-1: 1}
-			return self.pitch_weights
+	# 	if past1.pitch in self.chord.get_chromatic_tones():
+	# 		# really heavy weight on the chromatic steps
+	# 		self.pitch_weights = {past1.pitch+1: 1, past1.pitch-1: 1}
+	# 		return self.pitch_weights
 
-		# case 2: the direction of the previous notes is a scale going up by seconds
-		if interval > 0 and interval < 3:
-			self.pitch_weights[past1.pitch+interval] = 5
+	# 	# case 2: the direction of the previous notes is a scale going up by seconds
+	# 	if interval > 0 and interval < 3:
+	# 		self.pitch_weights[past1.pitch+interval] = 5
 
-		elif interval < 0 and interval > -3:
-			# WLOG, go down the scale
-			self.pitch_weights[past1.pitch-interval] =  5
+	# 	elif interval < 0 and interval > -3:
+	# 		# WLOG, go down the scale
+	# 		self.pitch_weights[past1.pitch-interval] =  5
 
-		else:
-			# if these conditions arent met, let's make the intervalic weights more important but not o mcuch so
-			self.pitch_weights[past1.pitch+interval] = 2
-			self.pitch_weights[past1.pitch-interval] = 2
 
-		# distribute notes so that they're weighted well within a good range, not all 2 octaves
-		slope = self.pitch_weights[past1.pitch] / (past1.pitch- min(self.pitch_weights)) / 2
-		for i in self.pitch_weights:
-			self.pitch_weights[i] = abs(int(-slope * abs(i - past1.pitch) + self.pitch_weights[i]))
+	# 	# distribute notes so that they're weighted well within a good range, not all 2 octaves
+	# 	slope = self.pitch_weights[past1.pitch] / (past1.pitch- min(self.pitch_weights)) / 2
+	# 	for i in self.pitch_weights:
+	# 		self.pitch_weights[i] = abs(int(-slope * abs(i - past1.pitch) + self.pitch_weights[i]))
 		
 
-		# if there's no usable notes, then just return a random note
-		if set(self.pitch_weights.values()) == set([0]):
-			self.pitch_weights[i-2] =2
-			self.pitch_weights[i+2] = 2
+	# 	# if there's no usable notes, then just return a random note
+	# 	if set(self.pitch_weights.values()) == set([0]):
+	# 		self.pitch_weights = {0:1}
 
-		self.pitch_weights[past1.pitch] = 0
+	# 	self.pitch_weights[past1.pitch] = 0
 
+	# 	return self.pitch_weights
+	# 	# weight the dictionary based on cases
+	# 	# make list of notes based on the wegihts
+	# 	# randomly choose notes from the list
+
+	def normal_weigh(self, listy, past_note):
+		slope = listy[past_note] / (past_note- min(listy))
+		for i in listy:
+			listy[i] = abs(int(-slope * abs(i - past_note) + listy[i]))
+		return listy
+
+	def logic(self):
+		# determines the outlier of a scale
+		accidental_threshold = .95
+		# probability that the next note chosen is based on the sacle
+		scale_threshold = 0.8
+		# OUTLINE:
+		# Get a few past notes (like 4)
+		# go up/down the scale, adding osme chromaticism sometimes
+		# if not going up or down the scale, hit some chord tones
+
+		# choose some random notes if there aren't enough starting notes
+		#! fix starting notes later
+		past_notes = self.past_notes[-2:]
+		if len(past_notes) < 2:
+			past_notes = [random.randint(50,70), random.randint(50,70)]
+		for i in range(len(past_notes)):
+			if not isinstance(past_notes[i], int):
+				past_notes[i] = past_notes[i].pitch
+		
+		# get the list of ontes
+		chord_tones = sorted(self.chord.get_chord_tones())
+		scale_tones =sorted(self.chord.get_scale_notes())
+		chroma_tones = sorted(self.chord.get_chromatic_tones())
+		pattern_probability = random.random()
+
+		# chromatic resolution comes first
+		if past_notes[-1] in chroma_tones:
+			print("resolving chromatic")
+			self.pitch_weights = {past_notes[-1]+1:1, past_notes[-1]-1:1}
+			return self.pitch_weights
+			
+		# sacle decision time
+		if pattern_probability < scale_threshold:
+			if past_notes[-1] in scale_tones:
+				current_index = scale_tones.index(past_notes[-1])
+				r = random.random()
+				# next scale tone up or down
+				if r < accidental_threshold:
+					if past_notes[-1] - past_notes[-2] > 0:
+						local_scale_weight_up = self.scale_weight * 2
+						local_scale_weight_down = self.scale_weight
+					else:
+						local_scale_weight_down = self.scale_weight * 2
+						local_scale_weight_up = self.scale_weight
+					self.pitch_weights = {scale_tones[current_index+1]:local_scale_weight_up, scale_tones[current_index-1]:local_scale_weight_down}
+				# chromatic tone
+				else:
+					self.pitch_weights = {scale_tones[current_index+1]-1:self.chroma_weight, scale_tones[current_index-1]+1:self.chroma_weight}
+			else:
+				self.pitch_weights = {random.choice(scale_tones):1}
+		# chord tone decision time
+		elif pattern_probability >= scale_threshold and pattern_probability < 0.95:
+			note = random.choice(chord_tones)
+			self.pitch_weights = {note.pitch: self.ct_weight}
+
+		else:
+			# random note
+			print("choosing random note")
+			self.pitch_weights = {random.randint(50,70):1}
+		
 		return self.pitch_weights
-		# weight the dictionary based on cases
-		# make list of notes based on the wegihts
-		# randomly choose notes from the list
+
 
 	def display(self):
 		x = list(self.pitch_weights.keys())

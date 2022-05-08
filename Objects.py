@@ -47,6 +47,9 @@ class Note:
 		self.pitch -= __o
 		return self.pitch
 
+	def __lt__(self, other):
+		return self.pitch < other.pitch
+
 	
 
 	def __str__(self):
@@ -215,6 +218,7 @@ class Chord:
 			indx = indx % len(notes_list)
 			notes.append(Note(notes_list[indx]).pitch)
 			notes.append(Note(notes_list[indx]).pitch-12)
+			notes.append(Note(notes_list[indx]).pitch+12)
 
 		# all but the last because it's the root
 		return notes[:-1]
@@ -231,6 +235,7 @@ class Chord:
 			if Note(i).pitch not in self.get_scale_notes():
 				chroma_tones.append(Note(i).pitch)
 				chroma_tones.append(Note(i).pitch-12)
+				chroma_tones.append(Note(i).pitch+12)
 
 		return chroma_tones
 	def __repr__(self):

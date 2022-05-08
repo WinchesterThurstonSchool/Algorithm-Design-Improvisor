@@ -10,8 +10,10 @@
 
 #fullChord = new Chord(note, ctype, seven, kind, degree, duration)
 #converting the chord to a midi event
-import mido
+
+import pygame
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
+import random
 
 # class Midi:
 #     def __init__(self, duration: int, note: str, velocity: 100): #find a good neutral velocity
@@ -22,6 +24,7 @@ from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 #def __init__(self, name: str, pitch = 64, octave = 4, duration = 1)
 
 song_name = "new_song.mid"
+backtrack_name = "A Fine Romance.mp3"
 
 def convertToMidi(n, bpm):
     # declare this new midi file. all messages are on one track
@@ -38,7 +41,7 @@ def convertToMidi(n, bpm):
     track.append(MetaMessage('instrument_name', name='Piano', time=0))
 
     for note in n:
-        ticks = 60
+        ticks = 120
         if note.duration == 0.0625:
             note.duration = 1
         elif note.duration == 0.125:
@@ -53,3 +56,36 @@ def convertToMidi(n, bpm):
     midi_file.save(song_name)
 
     return song_name
+
+
+
+def play_music(midi_filename):
+
+    # mixer config
+    freq = 44100  # audio CD quality
+    bitsize = -16   # unsigned 16 bit
+    channels = 2  # 1 is mono, 2 is stereo
+    buff = 1024   # number of samples
+    pygame.mixer.init(freq, bitsize, channels, buff)
+
+    # optional volume 0 to 1.0
+    pygame.mixer.music.set_volume(0.8)
+
+    # listen for interruptions
+    try:
+    # use the midi file you just saved
+        '''Stream music_file in a blocking manner'''
+        clock = pygame.time.Clock()
+        pygame.mixer.music.load(midi_filename)
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound(backtrack_name))
+        pygame.mixer.Channel(0).set_volume(.2)
+        pygame.mixer.music.set_volume(2)
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy():
+            clock.tick(30)  # check if playback has finished
+    except KeyboardInterrupt:
+        # if user hits Ctrl/C then exit
+        # (works only in console mode)
+        pygame.mixer.music.fadeout(1000)
+        pygame.mixer.music.stop()
+        raise SystemExit

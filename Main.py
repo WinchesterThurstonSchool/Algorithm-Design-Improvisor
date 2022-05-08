@@ -1,6 +1,7 @@
 import musicXML_scraper
 import ChoiceLogic
 import note_to_midi
+import pyautogui
 
 def main(filename):
 
@@ -22,12 +23,18 @@ def main(filename):
 	print("Writing to MIDI...")
 	midi_file = note_to_midi.convertToMidi(notes, bpm)
 	print("MIDI Written")
+	
 
 	print(f"Finished! MIDI file saved as \"{midi_file}\"")
+
+
+	if pyautogui.confirm("Play MIDI?"):
+		note_to_midi.play_music(midi_file)
+
 
 	return True
 
 
 
 
-main('A Fine Romance.txt')
+main('Blues For Alice.txt')
