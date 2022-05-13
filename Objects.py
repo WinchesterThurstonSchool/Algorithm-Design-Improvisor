@@ -15,11 +15,11 @@ scales = {
 	"mixolydian" : "WWHWWHW",
 	"lydian" : "WWWHWWH" ,
 	"half diminished" : "WHWHWWW",
-	"blues scale" : "AWHHAW"
+	"blues scale" : "AHHHHAW"
 }
 
 class Note:
-	def __init__(self, name: str, pitch = 64, octave = 4, duration = 1):
+	def __init__(self, name:str, pitch = 64, octave = 4, duration = 1):
 		"""Creates a note object.
 
 		Args:
@@ -50,14 +50,11 @@ class Note:
 	def __lt__(self, other):
 		return self.pitch < other.pitch
 
-	
-
 	def __str__(self):
 		return f"Pitch #: {self.get_pitch()}, {self.name}, {self.octave}, {self.duration}"
 
 	def __repr__(self):
-		return str(self.pitch)
-
+		return self.name
 	
 
 class Chord:
@@ -86,7 +83,7 @@ class Chord:
 
 	def get_chord_tones(self): 
 		# currently ignores extensions because otherwise it's just a scale
-		chord_tones = [Note(self.root)]
+		chord_tones = [Note(self.root).pitch]
 		notes_list = ["A","A#/Bb","B","C","C#/Db","D","D#/Eb","E","F","F#/Gb","G","G#/Ab"]
 		chord_intervals = ""
 
@@ -134,7 +131,10 @@ class Chord:
 			elif i == "m":
 				indx += 3
 			indx = indx % len(notes_list)
-			chord_tones.append(Note(notes_list[indx]))
+			chord_tones.append(Note(notes_list[indx]).pitch)
+			chord_tones.append(Note(notes_list[indx]).pitch+12)
+			chord_tones.append(Note(notes_list[indx]).pitch-12)
+
 
 		return chord_tones
 
@@ -163,7 +163,7 @@ class Chord:
 			# here is the domonant seven case
 			if self.seven == "min":
 				if self.extensions == []:
-					scale_list.append(scales["blues scale"])
+					# scale_list.append(scales["blues scale"])
 					scale_list.append(scales["mixolydian"])
 				else:
 					if (9, "#") in self.extensions:
@@ -221,7 +221,7 @@ class Chord:
 			notes.append(Note(notes_list[indx]).pitch+12)
 
 		# all but the last because it's the root
-		return notes[:-1]
+		return notes
 
 	def get_chromatic_tones(self):
 		"""creates a list of the chromatic notes in a chord

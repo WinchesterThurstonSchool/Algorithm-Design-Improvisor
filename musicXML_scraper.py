@@ -10,7 +10,7 @@ bfaString = "".join(i for i in bfa.readlines())
 def find_bpm(ms, num_beats):
     return 60000/ms * num_beats
 
-def writeChord(t, bpm = 160):
+def writeChord(t, bpm = 168):
     kind = ''
     degreeValue = ''
     degreeAlter = ''

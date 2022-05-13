@@ -24,7 +24,6 @@ import random
 #def __init__(self, name: str, pitch = 64, octave = 4, duration = 1)
 
 song_name = "new_song.mid"
-backtrack_name = "A Fine Romance.mp3"
 
 def convertToMidi(n, bpm):
     # declare this new midi file. all messages are on one track
@@ -50,8 +49,13 @@ def convertToMidi(n, bpm):
             note.duration = 4
         elif note.duration == 0.5:
             note.duration = 8
-        track.append(Message('note_on', channel = 0, note = note.pitch, velocity = 100, time = 0))
-        track.append(Message('note_off', channel = 0, note = note.pitch, velocity = 100, time = int(ticks*note.duration)))
+        r = random.random()
+        if r < 0.9:
+            track.append(Message('note_on', channel = 0, note = int(note.pitch), velocity = 100, time = 0))
+            track.append(Message('note_off', channel = 0, note = int(note.pitch), velocity = 100, time = int(ticks*note.duration)))
+        else:
+            track.append(Message('note_on', channel = 0, note = int(note.pitch), velocity = 0, time = int(ticks*note.duration)))
+            track.append(Message('note_off', channel = 0, note = int(note.pitch), velocity = 0, time = int(ticks*note.duration*2)))
 
     midi_file.save(song_name)
 
@@ -59,7 +63,7 @@ def convertToMidi(n, bpm):
 
 
 
-def play_music(midi_filename):
+def play_music(midi_filename, backtrack_filename = ""):
 
     # mixer config
     freq = 44100  # audio CD quality
@@ -77,8 +81,11 @@ def play_music(midi_filename):
         '''Stream music_file in a blocking manner'''
         clock = pygame.time.Clock()
         pygame.mixer.music.load(midi_filename)
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound(backtrack_name))
-        pygame.mixer.Channel(0).set_volume(.2)
+        try:
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound(backtrack_filename))
+            pygame.mixer.Channel(0).set_volume(.2)
+        except:
+            pass
         pygame.mixer.music.set_volume(2)
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy():

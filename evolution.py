@@ -6,6 +6,8 @@ import random
 import musicXML_scraper
 import note_to_midi
 import json
+import Objects
+from Objects import Note
 
 class Brain:
 	def __init__(self):
@@ -31,28 +33,21 @@ class Brain:
 
 
 class Individual:
-	def __init__(self):
+	def __init__(self, chord: Objects.Chord, past_notes: list[Objects.Note], goal: list):
 		# there are 6 weights to be adjusted. DO NOT CHANGE THIS 
 		self.brain = Brain()
 		self.weight = self.brain.weights
+		self.guess = ChoiceLogic.GetPitch(ChoiceLogic.Rhythm(
+			chord, past_notes))
+		self.guess.set_weights(self.weight)
+		self.guess = self.guess.guess()
+		self.goal = goal
 		self.fitness = 0.0
 		self.is_best = False
 		self.dead = False
 		self.num_chords = 1
+		self.goal = 0
 		self.filename = "A Fine Romance.txt"
-
-	def play(self):
-		with open(self.filename, 'r') as f:
-			xml_string = "".join(i for i in f.readlines())
-		chords, bpm = musicXML_scraper.getChords(xml_string)
-		notes = []
-		for chord in chords[:self.num_chords]:
-			notes += ChoiceLogic.choose_note(chord, notes, self.weight)
-
-		midi_file = note_to_midi.convertToMidi(notes, bpm)
-		note_to_midi.play_music(midi_file)
-
-		
 
 	def show(self):
 		if self.is_best:
@@ -60,14 +55,16 @@ class Individual:
 		else:
 			print(f"Current Individual: {self.weight}")
 
+	def reached_goal(self):
+		return self.goal == self.guess
+
 	def calculate_fitness(self):
-		self.play()
-		inp =input("Enter fitness (0-100): ")
-		try:
-			self.fitness = int(inp)
-		except ValueError:
-			print("Not a number. Default to 5")
-			self.fitness = 5
+		if self.reached_goal():
+			self.fitness = 1
+		else:
+			for i in range(len(self.guess)):
+				self.fitness = 1 / (self.guess[i] - self.goal[i])
+		
 
 	def gimme_baby(self):
 		baby = self
@@ -80,7 +77,7 @@ class Individual:
 		return f"{self.weight}"
 
 class Population:
-	def __init__(self, size = 4):
+	def __init__(self, chord, past_notes, goal, size = 50):
 
 		self.individuals = []
 		with open('notes_weights.json', 'r') as f:
@@ -90,13 +87,13 @@ class Population:
 				json_ls = []
 			if len(json_ls) > 0 :
 				for i in range(0,size):
-					indiv = Individual()
+					indiv = Individual(chord, past_notes, goal)
 					indiv.wight = json_ls[str(i)]
 					self.individuals.append(indiv)
 			else:
 				print("No Data Found. Making new weights")
 				for i in range(size):
-					indiv = Individual()
+					indiv = Individual(chord, past_notes, goal)
 					self.individuals.append(indiv)
 
 
@@ -161,7 +158,8 @@ class Population:
 
 
 def main():
-	test = Population(7)
+	test = Population(7, Objects.Chord("C", "maj", "min"), [Note("C"), Note(
+		"D"), Note("D#/Eb"), Note("E"), Note("G"), Note("A#/Bb"), Note("F#/Gb"), Note("G")])
 
 	while True:
 		test.calculate_fitness()
