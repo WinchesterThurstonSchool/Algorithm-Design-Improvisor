@@ -50,7 +50,7 @@ def convertToMidi(n, bpm):
         elif note.duration == 0.5:
             note.duration = 8
         r = random.random()
-        if r < 0.9:
+        if r < 0.95:
             track.append(Message('note_on', channel = 0, note = int(note.pitch), velocity = 100, time = 0))
             track.append(Message('note_off', channel = 0, note = int(note.pitch), velocity = 100, time = int(ticks*note.duration)))
         else:

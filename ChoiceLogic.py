@@ -55,7 +55,7 @@ class Rhythm:
 				1/2: 1,
 				1/4: 3,
 				1/8 :30,
-				1/16: 5
+				1/16: 1
 			}
 		return self.rhythm_weights
 
@@ -89,7 +89,7 @@ class GetPitch:
 
 		self.chroma_weight = 1
 		self.ct_weight = 5
-		self.color_ct_weight = 1
+		self.color_ct_weight = 2
 		self.scale_weight = 10
 
 		self.pitch_weights = dict()
@@ -177,7 +177,7 @@ class GetPitch:
 		# distribute notes so that they're weighted well within a good range, not all 2 octaves
 		slope = self.pitch_weights[past1.pitch] / (past1.pitch- min(self.pitch_weights)) / 2
 		for i in self.pitch_weights:
-			self.pitch_weights[i] = abs(int(-slope * abs(i - past1.pitch) + self.pitch_weights[i]))
+			self.pitch_weights[i] = abs(int(-slope *1/2* abs(i - past1.pitch) + self.pitch_weights[i]))
 		
 
 		# if there's no usable notes, then just return a random note
